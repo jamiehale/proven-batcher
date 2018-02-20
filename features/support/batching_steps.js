@@ -1,7 +1,11 @@
 import { Given, When, Then } from 'cucumber';
+import path from 'path';
+import { exec } from 'child_process';
 
 Given('a running ethereum node', callback => {
-  callback(null, 'pending');
+  exec(path.join(__dirname, '../../scripts/start_ganache.sh'), (error, stdout, stderr) => {
+    callback(error);
+  });
 });
 
 Given('a running IPFS server', callback => {
