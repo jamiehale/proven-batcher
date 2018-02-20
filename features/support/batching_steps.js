@@ -9,7 +9,10 @@ Given('a running ethereum node', callback => {
 });
 
 Given('a running IPFS server', callback => {
-  callback(null, 'pending');
+  exec(path.join(__dirname, '../../scripts/start_ipfs.sh'), (error, stdout, stderr) => {
+    console.log('HERE');
+    callback(error);
+  });
 });
 
 Given('a running batcher', callback => {

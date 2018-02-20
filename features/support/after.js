@@ -5,4 +5,6 @@ import { exec } from 'child_process';
 After(() => {
   exec(path.join(__dirname, '../../scripts/stop_ganache.sh'), (error, stdout, stderr) => {
   });
+  exec(path.join(__dirname, '../../scripts/stop_ipfs.sh'), (error, stdout, stderr) => {
+  });
 });
