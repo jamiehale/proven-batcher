@@ -2,6 +2,7 @@ import { Given, When, Then } from 'cucumber';
 import path from 'path';
 import { exec } from 'child_process';
 import { MongoClient } from 'mongodb';
+import * as amqp from 'amqplib/callback_api';
 
 Given('a running ethereum node', callback => {
   exec(path.join(__dirname, '../../scripts/start_ganache.sh'), (error, stdout, stderr) => {
@@ -26,7 +27,7 @@ Given('a running database', callback => {
 });  
 
 Given('a record of the deposition', callback => {
-  MongoClient.connect('mongodb://127.0.0.1:27017', (error, db) => {
+  MongoClient.connect('mongodb://localhost:27017', (error, db) => {
     if (error) {
       callback(error);
     } else {
@@ -45,6 +46,16 @@ Given('a record of the deposition', callback => {
   });
 });
 
+Given('a running RabbitMQ server', { timeout: 10000 }, callback => {
+  exec(path.join(__dirname, '../../scripts/start_rabbitmq.sh'), (error, stdout, stderr) => {
+    if (error) {
+      callback(error);
+    } else {
+      setTimeout(callback, 9000);
+    }
+  });
+});
+
 Given('a running batcher', callback => {
   exec(path.join(__dirname, '../../index.js'), (error, stdout, stderr) => {
     callback(error);
@@ -52,7 +63,22 @@ Given('a running batcher', callback => {
 });  
 
 When('I submit the deposition to the batcher', callback => {
-  callback(null, 'pending');
+  amqp.connect('amqp://localhost:5672', (error, connection) => {
+    if (error) {
+      callback(error);
+    } else {
+      connection.createChannel((error, channel) => {
+        if (error) {
+          callback(error);
+        } else {
+          channel.assertQueue('proven_batcher', { durable: false });
+          channel.sendToQueue('proven_batcher', new Buffer('abcdefg1234567'));
+          connection.close();
+          callback();
+        }
+      });
+    }
+  });
 });
 
 Then('the record of the deposition will be updated', callback => {

@@ -9,4 +9,6 @@ After(() => {
   });
   exec(path.join(__dirname, '../../scripts/stop_mongo.sh'), (error, stdout, stderr) => {
   });
+  exec(path.join(__dirname, '../../scripts/stop_rabbitmq.sh'), (error, stdout, stderr) => {
+  });
 });

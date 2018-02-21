@@ -8,6 +8,7 @@ Feature: Batching
     And a running IPFS server
     And a running database
     And a record of the deposition
+    And a running RabbitMQ server
     And a running batcher
     When I submit the deposition to the batcher
     Then the record of the deposition will be updated
