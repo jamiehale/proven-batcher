@@ -82,7 +82,33 @@ When('I submit the deposition to the batcher', callback => {
 });
 
 Then('the record of the deposition will be updated', callback => {
-  callback(null, 'pending');
+  MongoClient.connect('mongodb://localhost:27017', (error, db) => {
+    if (error) {
+      callback(error);
+    } else {
+      db.db('proven').collection('depositions').find({
+        assetHash: 'abcdefg1234567'
+      }).toArray((error, result) => {
+        if (error) {
+          db.close();
+          callback(error);
+        } else {
+          if (result.length === 0) {
+            db.close();
+            callback('No results');
+          } else {
+            if (!result[0].txHash) {
+              db.close();
+              callback('No txHash');
+            } else {
+              db.close();
+              callback(null);
+            }
+          }
+        }
+      });
+    }
+  });
 });
 
 Then('the batch will have been recorded in IPFS', callback => {
