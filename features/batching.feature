@@ -6,6 +6,7 @@ Feature: Batching
   Scenario: Produce a single deposition
     Given a running ethereum node
     And a running IPFS server
+    And a running database
     And a record of the deposition
     And a running batcher
     When I submit the deposition to the batcher
